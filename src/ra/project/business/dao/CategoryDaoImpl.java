@@ -1,5 +1,6 @@
-package ra.run;
+package ra.project.business.dao;
 
+import ra.run.Category;
 import ra.utils.ConnectionDB;
 
 import java.sql.CallableStatement;
@@ -8,18 +9,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-public class CategoryManager {
-    public static void main(String[] args) {
-        displayCategories();
-        addStudent();
-        displayCategories();
-    }
-
-    //Hienr thi danh sách danh
-
-    public static void displayCategories(){
+public class CategoryDaoImpl implements ICategoryDao{
+    @Override
+    public List<Category> findAll() {
         List<Category> list = new ArrayList<>();
         // B1 mở kết nối
         Connection conn = ConnectionDB.getConnection();
@@ -41,37 +34,30 @@ public class CategoryManager {
         }finally {
             ConnectionDB.closeConnection(conn);
         }
-
-        // hiển thị
-        if (list.isEmpty()){
-            System.err.println("ko có dữ liệu");
-        }else {
-            list.forEach(System.out::println);
-        }
+        return list;
     }
 
-    public static void addStudent(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Nhập tên danh mục");
-        String name = sc.nextLine();
-        System.out.println("Nhập mô tả danh mục");
-        String desc = sc.nextLine();
+    @Override
+    public Category findByCategory(int id) {
+        return null;
+    }
 
+    @Override
+    public boolean updateCategory(Category category) {
+        return false;
+    }
+
+    @Override
+    public boolean insertCategory(Category category) {
         // B1 mở kết nối
         Connection conn = ConnectionDB.getConnection();
         // B2 : tao và thực thi truy vấn
         try {
-//            conn.setAutoCommit(true);
             CallableStatement call = conn.prepareCall("{call insertNewCategory(?,?)}");
-            call.setString(1,name);
-            call.setString(2,desc);
+            call.setString(1,category.getName());
+            call.setString(2,category.getDescription());
             int rows = call.executeUpdate();
-            if (rows>0){
-                System.out.println("Thêm mới thành công");
-            }else {
-                System.err.println("thêm mới thất bại");
-            }
-//            conn.commit();
+            return rows > 0;
         } catch (SQLException e) {
             try {
                 conn.rollback();
@@ -82,7 +68,10 @@ public class CategoryManager {
         }finally {
             ConnectionDB.closeConnection(conn);
         }
+    }
 
-        sc.close();
+    @Override
+    public boolean deleteCategoryById(int id) {
+        return false;
     }
 }
